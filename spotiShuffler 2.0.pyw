@@ -139,14 +139,24 @@ def addToQueue():
         threadedGettingLengths()
 
         #playlist name : [playlist id, playlist length-1]
-        playlistIDs = {"Mah songs" : get_playlist_object("5NAzQpMDTAF7YOZVG3OcEj"),
-                        "Ryans ultimate playlist of absolute glory" : get_playlist_object("5BMLio3vkdkkxdntnr1owH"),
-                        "Forza Horizon Pulse FH2-4" : get_playlist_object("72OLI4jqcwDjFJ0XWHHSTh"),
-                        "Bangers and Mash" : get_playlist_object("5aalqdU1aiHnu0Z6SI8R6M"),
-                        "white girl music(helldivers2)" : get_playlist_object("55NAlULh1Su7mJNyryfC9d"), 
-                        "BANGERS NON-STOP" : get_playlist_object("3kj8qdexDkdH43Qu1YbURe"), 
-                        "ets2" : get_playlist_object("4DFYPrP58uyOFRXo1EqUmi"),
-                        "Cruising" : get_playlist_object("1Mv6ID6mj0UUJ3xW6mThtb")}
+        playlistIDs = {}
+        playlistFile = open("playlists.txt", "r")
+
+        for line in playlistFile:
+            if line != "\n":
+                line = line.split("`")
+                playlistIDs.update({line[0] : get_playlist_object(line[1][:-1])})
+
+        playlistFile.close()
+
+        # playlistIDs = {"Mah songs" : get_playlist_object("5NAzQpMDTAF7YOZVG3OcEj"),
+        #                 "Ryans ultimate playlist of absolute glory" : get_playlist_object("5BMLio3vkdkkxdntnr1owH"),
+        #                 "Forza Horizon Pulse FH2-4" : get_playlist_object("72OLI4jqcwDjFJ0XWHHSTh"),
+        #                 "Bangers and Mash" : get_playlist_object("5aalqdU1aiHnu0Z6SI8R6M"),
+        #                 "white girl music(helldivers2)" : get_playlist_object("55NAlULh1Su7mJNyryfC9d"), 
+        #                 "BANGERS NON-STOP" : get_playlist_object("3kj8qdexDkdH43Qu1YbURe"), 
+        #                 "ets2" : get_playlist_object("4DFYPrP58uyOFRXo1EqUmi"),
+        #                 "Cruising" : get_playlist_object("1Mv6ID6mj0UUJ3xW6mThtb")}
 
         track_uris = []
 
@@ -207,6 +217,18 @@ def addToQueue():
 def quit():
     window.destroy()
 
+def getPlaylistNames():
+    '''
+    returns an array of strings containing the name of each playlist in the file. 
+    '''
+    playlistNames = []
+    playlistFile = open("playlists.txt", "r")
+    for line in playlistFile:
+        if line != "\n":
+            playlistNames.append(line.split("`")[0])
+
+    return playlistNames
+
 welcomeLabel = tkinter.Label(window, text = "Welcome to SpotiShuffler", font = font.Font(size=25), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
 selectionLabel = tkinter.Label(window, text = "Please select a playlist", font = font.Font(size=20), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
 welcomeLabel.place(relx = .5, rely = .2, anchor = tkinter.CENTER)
@@ -227,8 +249,11 @@ style.theme_create('SpotiShuffler', settings =
                    })
 style.theme_use('SpotiShuffler') 
 
-options = ["Mah songs", "Ryans ultimate playlist of absolute glory", "Forza Horizon Pulse FH2-4", "Bangers and Mash", "white girl music(helldivers2)", "BANGERS NON-STOP", "ets2", "Cruising"]
+#options = ["Mah songs", "Ryans ultimate playlist of absolute glory", "Forza Horizon Pulse FH2-4", "Bangers and Mash", "white girl music(helldivers2)", "BANGERS NON-STOP", "ets2", "Cruising"]
+
+options = getPlaylistNames()
 options.sort()
+
 dropdown = ttk.Combobox(window, values = options, state = "readonly", width = 32, font = font.Font(size=13), justify = "center", background = MAIN_BG_COLOUR, foreground = DROPDOWN_TEXT_COLOUR)
 dropdownSelectButton = tkinter.Button(window, text = "Add shuffled songs to queue", command = threadedAddToQueue,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
 dropdown.place(relx = .5, rely = .45, anchor = tkinter.CENTER)
