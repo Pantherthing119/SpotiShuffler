@@ -24,6 +24,9 @@ window.iconbitmap(r"SpotiShuffler_Icon.ico")
 
 window.iconphoto(True, ImageTk.PhotoImage(icon))
 
+global fileBreakChar
+fileBreakChar = "`/¬|"
+
 class StatusWindowManager():
     def __init__(self):
         #set up satus window
@@ -121,16 +124,30 @@ def addToQueue():
 
         threadedGettingLengths()
 
-        #playlist name : [playlist id, playlist length-1]
-        playlistIDs = {}
-        playlistFile = open("playlists.txt", "r")
+        #format - playlist name : playlist id
+        def getPlaylistIDs():
+            '''
+            returns a dictionary with key of the playlist name and value of an array of URI and playlist length. 
+            this function relies on functions defined in the main spotiShuffler py file.
+            '''
+            
+            try:
+                playlistFile = open("playlists.txt", "r")
+                playlistIDs = {}
+            except:
+                #file does not exist so return empty dictionary
+                return {}
+                
+            for line in playlistFile:
+                if line != "\n":
+                    line = line.split(fileBreakChar)
+                    playlistIDs.update({line[0] : line[1][:-1]})
 
-        for line in playlistFile:
-            if line != "\n":
-                line = line.split("`")
-                playlistIDs.update({line[0] : line[1][:-1]})
+            playlistFile.close()
 
-        playlistFile.close()
+            return playlistIDs
+
+        playlistIDs = getPlaylistIDs()
 
         track_uris = []
 
@@ -150,16 +167,20 @@ def addToQueue():
             return total_tracks
         
         def getURIFromName(playlistName):
+            '''
+            returns the URI of a playlist as a string from its name
+            '''
             playlistFile = open("playlists.txt", "r")
 
             for line in playlistFile:
                 if line != "\n":
-                    if line.split("`")[0] == playlistName:
-                        return line.split("`")[1][:-1]
+                    if line == playlistName:
+                        return line.split(fileBreakChar)[1][:-1]
 
             playlistFile.close()
-                    
-            #if execution gets to here, playlist was not found
+
+            #if execution gets to here, playlist was not found. Return blank string instead. 
+            return ""
 
         currentPlaylistName = dropdown.get() #string for the name of the selected playlist
         currentPlaylistURI = getURIFromName(currentPlaylistName)
@@ -225,11 +246,19 @@ def quit():
     window.destroy()
 
 def getPlaylistNames():
+    '''
+    returns an array of strings containing the name of each playlist in the file. 
+    '''
+    try:
+        playlistFile = open("playlists.txt", "r")
+    except:
+        #file does not exist so return empty array
+        return []
+    
     playlistNames = []
-    playlistFile = open("playlists.txt", "r")
     for line in playlistFile:
         if line != "\n":
-            playlistNames.append(line.split("`")[0])
+            playlistNames.append(line.split(fileBreakChar)[0])
 
     return playlistNames
 
