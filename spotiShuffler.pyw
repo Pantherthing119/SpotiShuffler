@@ -243,9 +243,6 @@ def addToQueue():
         statusWindowManager.killStatusWindow()
         messagebox.showinfo("Success", "Successfully added shuffled songs from " + currentPlaylist + " to queue")
 
-def quit():
-    window.destroy()
-
 def getPlaylistNames():
     '''
     returns an array of strings containing the name of each playlist in the file. 
@@ -263,10 +260,8 @@ def getPlaylistNames():
 
     return playlistNames
 
-welcomeLabel = tkinter.Label(window, text = "Welcome to SpotiShuffler", font = font.Font(size=25), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
-selectionLabel = tkinter.Label(window, text = "Please select a playlist", font = font.Font(size=20), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
-welcomeLabel.place(relx = .5, rely = .2, anchor = tkinter.CENTER)
-selectionLabel.place(relx = .5, rely = .35, anchor = tkinter.CENTER)
+def quit():
+    window.destroy()
 
 window.option_add('*TCombobox*Listbox.background', PRESSED_TEXT_COLOUR)
 window.option_add('*TCombobox*Listbox.foreground', MAIN_BG_COLOUR)
@@ -283,15 +278,29 @@ style.theme_create('SpotiShuffler', settings =
                    })
 style.theme_use('SpotiShuffler') 
 
+
+playlistSelectFrame = tkinter.Frame(window, background = MAIN_BG_COLOUR)
+playlistManagementFrame = tkinter.Frame(window, background = MAIN_BG_COLOUR)
+
+frameManager = FrameManager(playlistSelectFrame)
+
+welcomeLabel = tkinter.Label(playlistSelectFrame, text = "Welcome to SpotiShuffler", font = font.Font(size=25), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
+selectionLabel = tkinter.Label(playlistSelectFrame, text = "Please select a playlist", font = font.Font(size=20), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
+welcomeLabel.place(relx = .5, rely = .2, anchor = tkinter.CENTER)
+selectionLabel.place(relx = .5, rely = .35, anchor = tkinter.CENTER)
+
 options = getPlaylistNames()
 options.sort()
 
-dropdown = ttk.Combobox(window, values = options, state = "readonly", width = 32, font = font.Font(size=13), justify = "center", background = MAIN_BG_COLOUR, foreground = DROPDOWN_TEXT_COLOUR)
-dropdownSelectButton = tkinter.Button(window, text = "Add shuffled songs to queue", command = threadedAddToQueue,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
+dropdown = ttk.Combobox(playlistSelectFrame, values = options, state = "readonly", width = 32, font = font.Font(size=13), justify = "center", background = MAIN_BG_COLOUR, foreground = DROPDOWN_TEXT_COLOUR)
+dropdownSelectButton = tkinter.Button(playlistSelectFrame, text = "Add shuffled songs to queue", command = threadedAddToQueue,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
 dropdown.place(relx = .5, rely = .45, anchor = tkinter.CENTER)
 dropdownSelectButton.place(relx = .5, rely = .55, anchor = tkinter.CENTER)
 
-quitButton = tkinter.Button(window, text = "Quit", command = quit,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
-quitButton.place(relx = .5, rely = .7, anchor = tkinter.CENTER)
+playlistManagementButton = tkinter.Button(playlistSelectFrame, text = "Manage Playlists", command = frameManager.setPage(playlistManagementFrame),font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
+playlistManagementButton.place(relx = .5, rely = .7, anchor = tkinter.CENTER)
+
+quitButton = tkinter.Button(playlistSelectFrame, text = "Quit", command = quit,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
+quitButton.place(relx = .5, rely = .85, anchor = tkinter.CENTER)
 
 window.mainloop()
