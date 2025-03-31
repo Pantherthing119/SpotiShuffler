@@ -1,4 +1,4 @@
 @echo off
 cd /D "%~dp0"
-start ".\pythonw.exe" ".\spotiShuffler 2.0.pyw"
+start ".\pythonw.exe" ".\spotiShuffler.pyw"
 exit
