@@ -41,7 +41,7 @@ class StatusWindowManager():
         self.frameManager = FrameManager(self.gettingLengthsFrame)
         
         #format frames
-        gettingLengthsLabel = tkinter.Label(self.gettingLengthsFrame, text = "Getting playlist lengths...", font = font.Font(size=20), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
+        gettingLengthsLabel = tkinter.Label(self.gettingLengthsFrame, text = "Getting playlist length...", font = font.Font(size=20), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
         gettingLengthsLabel.place(relx = .5, rely = .3, anchor = tkinter.CENTER)
         gettingLengthsprogressbar = ttk.Progressbar(self.gettingLengthsFrame, mode="indeterminate")
         gettingLengthsprogressbar.place(relx=.5, rely=.5, anchor = tkinter.CENTER, width=200)
@@ -104,24 +104,6 @@ def addToQueue():
         #initialise spotipy
         sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, redirect_uri=redirect_uri, scope="user-library-read user-read-playback-state user-modify-playback-state"))
 
-        def get_playlist_length(playlist_id):
-            total_tracks = 0
-            offset = 0
-
-            while True:
-                response = sp.playlist_items(playlist_id, offset=offset, fields='total,items(track.id)')
-                total_tracks += len(response['items'])
-                offset += len(response['items'])
-
-                # Break the loop if there are no more items to fetch
-                if len(response['items']) == 0:
-                    break
-
-            return total_tracks
-
-        def get_playlist_object(playlist_id):
-            return [playlist_id, get_playlist_length(playlist_id) - 1]
-
         def threadedGettingLengths():
             thread = threading.Thread(target=statusWindowManager.showGettingLengths) 
             thread.start()
@@ -136,6 +118,7 @@ def addToQueue():
             
         statusWindowManager = StatusWindowManager()
         
+
         threadedGettingLengths()
 
         #playlist name : [playlist id, playlist length-1]
@@ -145,32 +128,54 @@ def addToQueue():
         for line in playlistFile:
             if line != "\n":
                 line = line.split("`")
-                playlistIDs.update({line[0] : get_playlist_object(line[1][:-1])})
+                playlistIDs.update({line[0] : line[1][:-1]})
 
         playlistFile.close()
 
-        # playlistIDs = {"Mah songs" : get_playlist_object("5NAzQpMDTAF7YOZVG3OcEj"),
-        #                 "Ryans ultimate playlist of absolute glory" : get_playlist_object("5BMLio3vkdkkxdntnr1owH"),
-        #                 "Forza Horizon Pulse FH2-4" : get_playlist_object("72OLI4jqcwDjFJ0XWHHSTh"),
-        #                 "Bangers and Mash" : get_playlist_object("5aalqdU1aiHnu0Z6SI8R6M"),
-        #                 "white girl music(helldivers2)" : get_playlist_object("55NAlULh1Su7mJNyryfC9d"), 
-        #                 "BANGERS NON-STOP" : get_playlist_object("3kj8qdexDkdH43Qu1YbURe"), 
-        #                 "ets2" : get_playlist_object("4DFYPrP58uyOFRXo1EqUmi"),
-        #                 "Cruising" : get_playlist_object("1Mv6ID6mj0UUJ3xW6mThtb")}
-
         track_uris = []
 
-        currentPlaylist = dropdown.get()
+        def get_playlist_length(playlist_id):
+            total_tracks = 0
+            offset = 0
+
+            while True:
+                response = sp.playlist_items(playlist_id, offset=offset, fields='total,items(track.id)')
+                total_tracks += len(response['items'])
+                offset += len(response['items'])
+
+                # Break the loop if there are no more items to fetch
+                if len(response['items']) == 0:
+                    break
+
+            return total_tracks
+        
+        def getURIFromName(playlistName):
+            playlistFile = open("playlists.txt", "r")
+
+            for line in playlistFile:
+                if line != "\n":
+                    if line.split("`")[0] == playlistName:
+                        return line.split("`")[1][:-1]
+
+            playlistFile.close()
+                    
+            #if execution gets to here, playlist was not found
+
+        currentPlaylistName = dropdown.get() #string for the name of the selected playlist
+        currentPlaylistURI = getURIFromName(currentPlaylistName)
+        currentPlaylistLength = get_playlist_length(currentPlaylistURI)
+
 
         threadedFetchingSongs()
 
+
         #create list of the uri of all tracks in the given playlist
         #need for loop and ofset as playlist_tracks() can only get 100 tracks at a time but can have an ofset of where to start in the playlist
-        if playlistIDs.get(currentPlaylist)[1] > 100:
+        if currentPlaylistLength > 100:
             ofset = 0
-            for ofset in range(0, (playlistIDs.get(currentPlaylist)[1]//100)):
+            for ofset in range(0, (currentPlaylistLength//100)):
                 ofset *= 100
-                offsetTrack_uris = sp.playlist_tracks(playlist_id=playlistIDs.get(currentPlaylist)[0], offset=ofset)["items"]
+                offsetTrack_uris = sp.playlist_tracks(playlist_id=playlistIDs.get(currentPlaylist), offset=ofset)["items"]
                 for i in range(0,100):
                     try: 
                         new_uri = offsetTrack_uris[i]["track"]["uri"]
@@ -178,10 +183,10 @@ def addToQueue():
                     except Exception:
                         pass
 
-            if playlistIDs.get(currentPlaylist)[1]%100 != 0: #deal remaining songs after the last mulitple of 100 [e.g., the last 56 songs of a 156 song playlist]
+            if currentPlaylistLength%100 != 0: #deal remaining songs after the last mulitple of 100 [e.g., the last 56 songs of a 156 song playlist]
                 ofset += 100
-                offsetTrack_uris = sp.playlist_tracks(playlist_id=playlistIDs.get(currentPlaylist)[0], offset=ofset)["items"]
-                upperRange = playlistIDs.get(currentPlaylist)[1]%100
+                offsetTrack_uris = sp.playlist_tracks(playlist_id=playlistIDs.get(currentPlaylist), offset=ofset)["items"]
+                upperRange = currentPlaylistLength%100
                 for i in range(0, upperRange):
                     try:
                         new_uri = offsetTrack_uris[i]["track"]["uri"]
@@ -189,8 +194,8 @@ def addToQueue():
                     except Exception:
                         pass
         else: #needed for playlists less than 100 songs
-            track_uris = sp.playlist_tracks(playlist_id=playlistIDs.get(currentPlaylist)[0])["items"]
-            for i in range(0,playlistIDs.get(currentPlaylist)[1]):
+            track_uris = sp.playlist_tracks(playlist_id=playlistIDs.get(currentPlaylist))["items"]
+            for i in range(0,currentPlaylistLength):
                 try: 
                     new_uri = track_uris[i]["track"]["uri"]
                     track_uris.append(new_uri)
@@ -200,9 +205,11 @@ def addToQueue():
         #shuffles list of uri's ready to be added to queue
         shuffled_uris = track_uris
         random.shuffle(shuffled_uris)
-        shuffled_uris = shuffled_uris[0:min(75, playlistIDs.get(currentPlaylist)[1])]
+        shuffled_uris = shuffled_uris[0:min(75, currentPlaylistLength)]
+
 
         threadedAddingToQueue()
+
 
         #add the shuffled playlist to the queue
         for uri in shuffled_uris:
@@ -218,9 +225,6 @@ def quit():
     window.destroy()
 
 def getPlaylistNames():
-    '''
-    returns an array of strings containing the name of each playlist in the file. 
-    '''
     playlistNames = []
     playlistFile = open("playlists.txt", "r")
     for line in playlistFile:
@@ -248,8 +252,6 @@ style.theme_create('SpotiShuffler', settings =
                     }
                    })
 style.theme_use('SpotiShuffler') 
-
-#options = ["Mah songs", "Ryans ultimate playlist of absolute glory", "Forza Horizon Pulse FH2-4", "Bangers and Mash", "white girl music(helldivers2)", "BANGERS NON-STOP", "ets2", "Cruising"]
 
 options = getPlaylistNames()
 options.sort()
