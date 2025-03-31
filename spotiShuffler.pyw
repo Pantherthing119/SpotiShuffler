@@ -24,8 +24,9 @@ window.iconbitmap(r"SpotiShuffler_Icon.ico")
 
 window.iconphoto(True, ImageTk.PhotoImage(icon))
 
-global fileBreakChar
-fileBreakChar = "`/¬|"
+global FILE_BREAK_CHAR
+FILE_BREAK_CHAR = "`/¬|"
+#use `/¬| as a sequence of charcters to break up the playlist name and the playlist URI in the playlists.txt file. Cannot use standard comma as a seperator as playlists may contain commas in their names. Instead, I have used a random sequence of characters instead as it is very unlikely that this sequence will appear in a playlist name. 
 
 class StatusWindowManager():
     def __init__(self):
@@ -140,7 +141,7 @@ def addToQueue():
                 
             for line in playlistFile:
                 if line != "\n":
-                    line = line.split(fileBreakChar)
+                    line = line.split(FILE_BREAK_CHAR)
                     playlistIDs.update({line[0] : line[1][:-1]})
 
             playlistFile.close()
@@ -175,7 +176,7 @@ def addToQueue():
             for line in playlistFile:
                 if line != "\n":
                     if line == playlistName:
-                        return line.split(fileBreakChar)[1][:-1]
+                        return line.split(FILE_BREAK_CHAR)[1][:-1]
 
             playlistFile.close()
 
@@ -258,7 +259,7 @@ def getPlaylistNames():
     playlistNames = []
     for line in playlistFile:
         if line != "\n":
-            playlistNames.append(line.split(fileBreakChar)[0])
+            playlistNames.append(line.split(FILE_BREAK_CHAR)[0])
 
     return playlistNames
 
