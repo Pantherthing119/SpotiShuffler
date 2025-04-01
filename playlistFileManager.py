@@ -3,9 +3,10 @@ Temp file for testing file handling functions and storing functions not yet impl
 Will be deleted once file handling is full implemented. 
 '''
 
-global fileBreakChar
-fileBreakChar = "`|?@"
+global FILE_BREAK_CHAR
+FILE_BREAK_CHAR = "`|?@"
 
+#added but not fully implemented
 def addNewPlaylist(name, link):
     '''
     adds a new playlist to the playlists.txt file. 
@@ -23,7 +24,7 @@ def addNewPlaylist(name, link):
     if "?" in uri:
         uri = uri.split("?")[0]
 
-    newLine = name + fileBreakChar + uri + "\n"
+    newLine = name + FILE_BREAK_CHAR + uri + "\n"
 
     alreadyExists = False
     for line in playlistFile:
@@ -39,6 +40,7 @@ def addNewPlaylist(name, link):
         playlistFile.write(newLine)
         playlistFile.close()   
 
+#added but not fully implemented
 def removePlaylist(name):
     '''
     removes a playlist from the playlists.txt file. 
@@ -54,15 +56,15 @@ def removePlaylist(name):
         playlistFileContent = []
 
         for line in playlistFile:
-            if line.split(fileBreakChar)[0] != name:
-                playlistFileContent.append(line.split(fileBreakChar))
+            if line.split(FILE_BREAK_CHAR)[0] != name:
+                playlistFileContent.append(line.split(FILE_BREAK_CHAR))
         
         playlistFile.close()
 
         playlistFile = open("playlists.txt", "w")
         for line in playlistFileContent:
             if line != "\n":
-                newLine = line[0] + fileBreakChar + line[1][:-1] + "\n"
+                newLine = line[0] + FILE_BREAK_CHAR + line[1][:-1] + "\n"
                 playlistFile.write(newLine)
         
         playlistFile.close()
@@ -83,7 +85,7 @@ def getPlaylistIDs():
         
     for line in playlistFile:
         if line != "\n":
-            line = line.split(fileBreakChar)
+            line = line.split(FILE_BREAK_CHAR)
             playlistIDs.update({line[0] : line[1][:-1]})
 
     playlistFile.close()
@@ -104,7 +106,7 @@ def getPlaylistNames():
     playlistNames = []
     for line in playlistFile:
         if line != "\n":
-            playlistNames.append(line.split(fileBreakChar)[0])
+            playlistNames.append(line.split(FILE_BREAK_CHAR)[0])
 
     return playlistNames
 
@@ -117,8 +119,8 @@ def getURIFromName(playlistName):
 
     for line in playlistFile:
         if line != "\n":
-            if line.split(fileBreakChar)[0] == playlistName:
-                return line.split(fileBreakChar)[1][:-1]
+            if line.split(FILE_BREAK_CHAR)[0] == playlistName:
+                return line.split(FILE_BREAK_CHAR)[1][:-1]
 
     playlistFile.close()
 
@@ -135,3 +137,4 @@ def getURIFromName(playlistName):
 # addNewPlaylist("BANGERS NON_STOP", "https://open.spotify.com/playlist/3kj8qdexDkdH43Qu1YbURe?si=814a9a39a42e49ee")
 # addNewPlaylist("ets2", "https://open.spotify.com/playlist/4DFYPrP58uyOFRXo1EqUmi?si=7b3696bdff0f42ec")
 # addNewPlaylist("Crusing", "https://open.spotify.com/playlist/1Mv6ID6mj0UUJ3xW6mThtb?si=72ada6c1ced24620")
+

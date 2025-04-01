@@ -1,9 +1,10 @@
 import tkinter, spotipy, random, threading, sys, ctypes
+import tkinter.messagebox
 from tkinter import font, ttk, messagebox
 from spotipy.oauth2 import SpotifyOAuth
 from PIL import Image, ImageTk
 
-#tkinter setup
+# tkinter setup
 MAIN_BG_COLOUR = "#1F1F1F"
 MAIN_TEXT_COLOUR = "white"
 DROPDOWN_TEXT_COLOUR = "#1F1F1F"
@@ -26,25 +27,25 @@ window.iconphoto(True, ImageTk.PhotoImage(icon))
 
 global FILE_BREAK_CHAR
 FILE_BREAK_CHAR = "`|?@"
-#use `/¬| as a sequence of charcters to break up the playlist name and the playlist URI in the playlists.txt file. Cannot use standard comma as a seperator as playlists may contain commas in their names. Instead, I have used a random sequence of characters instead as it is very unlikely that this sequence will appear in a playlist name. 
+# use `/¬| as a sequence of charcters to break up the playlist name and the playlist URI in the playlists.txt file. Cannot use standard comma as a seperator as playlists may contain commas in their names. Instead, I have used a random sequence of characters instead as it is very unlikely that this sequence will appear in a playlist name. 
 
 class StatusWindowManager():
     def __init__(self):
-        #set up satus window
+        # set up satus window
         self.statusWindow = tkinter.Toplevel(window, background = MAIN_BG_COLOUR)
         self.statusWindow.title("Status Window")
         self.setGeoInfo = "400x300" + "+" + str(int(window.winfo_screenwidth()/2) - 200) + "+" + str(int(window.winfo_screenheight()/2) - 150)
         self.statusWindow.geometry(self.setGeoInfo)
         self.statusWindow.resizable(False, False)
         
-        #define frames
+        # define frames
         self.gettingLengthsFrame = tkinter.Frame(self.statusWindow, background = MAIN_BG_COLOUR)
         self.fetchingSongsFrame = tkinter.Frame(self.statusWindow, background = MAIN_BG_COLOUR)
         self.addingToQueueFrame = tkinter.Frame(self.statusWindow, background = MAIN_BG_COLOUR)
         
         self.frameManager = FrameManager(self.gettingLengthsFrame)
         
-        #format frames
+        # format frames
         gettingLengthsLabel = tkinter.Label(self.gettingLengthsFrame, text = "Getting playlist length...", font = font.Font(size=20), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
         gettingLengthsLabel.place(relx = .5, rely = .3, anchor = tkinter.CENTER)
         gettingLengthsprogressbar = ttk.Progressbar(self.gettingLengthsFrame, mode="indeterminate")
@@ -87,24 +88,24 @@ class FrameManager():
         
 
 
-#function to allow addToQueue to be executed using threading
+# function to allow addToQueue to be executed using threading
 def threadedAddToQueue():
     thread = threading.Thread(target=addToQueue) 
     thread.start()
 
-#code to get the value of the dropdown and use this to add 75 random songs from the selected playlist to the users queue
+# code to get the value of the dropdown and use this to add 75 random songs from the selected playlist to the users queue
 def addToQueue():
     currentPlaylist = dropdown.get()
     if currentPlaylist == "":
         messagebox.showerror("Warning", "Please choose a playlist.")
     else:
-        #spotipy app data
-        username = "ddm9kv6312dcqxu9ijwke2x3j"
+        # spotipy app data
+        # username = "ddm9kv6312dcqxu9ijwke2x3j"
         clientID = "42ef47bdf0d342cca3fa7773040df34a"
         clientSecret = "c62e82d279064fab82ab819e8426392c"
         redirect_uri = "https://localhost:8888/callback"
 
-        #initialise spotipy
+        # initialise spotipy
         sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, redirect_uri=redirect_uri, scope="user-library-read user-read-playback-state user-modify-playback-state"))
 
         def threadedGettingLengths():
@@ -124,7 +125,7 @@ def addToQueue():
 
         threadedGettingLengths()
 
-        #format - playlist name : playlist id
+        # format - playlist name : playlist id
         def getPlaylistIDs():
             '''
             returns a dictionary with key of the playlist name and value of an array of URI and playlist length. 
@@ -135,7 +136,7 @@ def addToQueue():
                 playlistFile = open("playlists.txt", "r")
                 playlistIDs = {}
             except:
-                #file does not exist so return empty dictionary
+                # file does not exist so return empty dictionary
                 return {}
                 
             for line in playlistFile:
@@ -179,10 +180,10 @@ def addToQueue():
 
             playlistFile.close()
 
-            #if execution gets to here, playlist was not found. Return blank string instead. 
+            # if execution gets to here, playlist was not found. Return blank string instead. 
             return ""
 
-        currentPlaylistName = dropdown.get() #string for the name of the selected playlist
+        currentPlaylistName = dropdown.get() # string for the name of the selected playlist
         currentPlaylistURI = getURIFromName(currentPlaylistName)
         currentPlaylistLength = get_playlist_length(currentPlaylistURI)
 
@@ -190,8 +191,8 @@ def addToQueue():
         threadedFetchingSongs()
 
 
-        #create list of the uri of all tracks in the given playlist
-        #need for loop and ofset as playlist_tracks() can only get 100 tracks at a time but can have an ofset of where to start in the playlist
+        # create list of the uri of all tracks in the given playlist
+        # need for loop and ofset as playlist_tracks() can only get 100 tracks at a time but can have an ofset of where to start in the playlist
         if currentPlaylistLength > 100:
             ofset = 0
             for ofset in range(0, (currentPlaylistLength//100)):
@@ -204,7 +205,7 @@ def addToQueue():
                     except Exception:
                         pass
 
-            if currentPlaylistLength%100 != 0: #deal remaining songs after the last mulitple of 100 [e.g., the last 56 songs of a 156 song playlist]
+            if currentPlaylistLength%100 != 0: # deal remaining songs after the last mulitple of 100 [e.g., the last 56 songs of a 156 song playlist]
                 ofset += 100
                 offsetTrack_uris = sp.playlist_tracks(playlist_id=playlistIDs.get(currentPlaylist), offset=ofset)["items"]
                 upperRange = currentPlaylistLength%100
@@ -214,7 +215,7 @@ def addToQueue():
                         track_uris.append(new_uri)
                     except Exception:
                         pass
-        else: #needed for playlists less than 100 songs
+        else: # needed for playlists less than 100 songs
             track_uris = sp.playlist_tracks(playlist_id=playlistIDs.get(currentPlaylist))["items"]
             for i in range(0,currentPlaylistLength):
                 try: 
@@ -223,7 +224,7 @@ def addToQueue():
                 except Exception:
                     pass
 
-        #shuffles list of uri's ready to be added to queue
+        # shuffles list of uri's ready to be added to queue
         shuffled_uris = track_uris
         random.shuffle(shuffled_uris)
         shuffled_uris = shuffled_uris[0:min(75, currentPlaylistLength)]
@@ -232,7 +233,7 @@ def addToQueue():
         threadedAddingToQueue()
 
 
-        #add the shuffled playlist to the queue
+        # add the shuffled playlist to the queue
         for uri in shuffled_uris:
             try:
                 sp.add_to_queue(uri)
@@ -249,7 +250,7 @@ def getPlaylistNames():
     try:
         playlistFile = open("playlists.txt", "r")
     except:
-        #file does not exist so return empty array
+        # file does not exist so return empty array
         return []
     
     playlistNames = []
@@ -277,12 +278,13 @@ style.theme_create('SpotiShuffler', settings =
                    })
 style.theme_use('SpotiShuffler') 
 
-
+# UI organisation setup
 playlistSelectFrame = tkinter.Frame(window, background = MAIN_BG_COLOUR)
 playlistManagementFrame = tkinter.Frame(window, background = MAIN_BG_COLOUR)
 
 frameManager = FrameManager(playlistSelectFrame)
 
+# playlist select page UI
 welcomeLabel = tkinter.Label(playlistSelectFrame, text = "Welcome to SpotiShuffler", font = font.Font(size=25), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
 selectionLabel = tkinter.Label(playlistSelectFrame, text = "Please select a playlist", font = font.Font(size=20), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
 welcomeLabel.place(relx = .5, rely = .15, anchor = tkinter.CENTER)
@@ -302,26 +304,119 @@ playlistManagementButton.place(relx = .5, rely = .65, anchor = tkinter.CENTER)
 quitButton = tkinter.Button(playlistSelectFrame, text = "Quit", command = quit,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
 quitButton.place(relx = .5, rely = .8, anchor = tkinter.CENTER)
 
+def addNewPlaylist(name, link):
+    '''
+    adds a new playlist to the playlists.txt file. 
+    '''
+    try:
+        playlistFile = open("playlists.txt", "r")
+    except:
+        # playlists file does not exist so create the file then re-open it in read mode. 
+        playlistFile = open("playlists.txt", "w")
+        playlistFile.close()
+        playlistFile = open("playlists.txt", "r")
+    
+    uri = link.split("/")
+    uri = uri[len(uri)-1]
+    if "?" in uri:
+        uri = uri.split("?")[0]
 
-def addPlaylist():
-    print("Add new playlist")
+    newLine = name + FILE_BREAK_CHAR + uri + "\n"
 
-def removePlaylist():
-    print("Remove existing playlist")
+    alreadyExists = False
+    for line in playlistFile:
+        if line == newLine:
+            alreadyExists = True
+    
+    playlistFile.close()
+    
+    if alreadyExists:
+        messagebox.showerror(title = "Error", message = "This playlist already exists. ")
+    else:
+        playlistFile = open("playlists.txt", "a")
+        playlistFile.write(newLine)
+        playlistFile.close()
 
+        messagebox.showinfo(title = "Success", message = "Successfully added playlist. ")
+
+
+def removePlaylist(name):
+    '''
+    removes a playlist from the playlists.txt file. 
+    '''
+    try:
+        playlistFile = open("playlists.txt", "r")
+        fileExists = True
+    except:
+        # file does not exist so do not attempt to delete a playlist
+        messagebox.showerror(title = "Error", message = "Cannot find any saved playlists. Please add a playlist first. ")
+        fileExists =  False
+
+    if fileExists:
+        playlistFileContent = []
+
+        for line in playlistFile:
+            if line.split(FILE_BREAK_CHAR)[0] != name:
+                playlistFileContent.append(line.split(FILE_BREAK_CHAR))
+        
+        playlistFile.close()
+
+        playlistFile = open("playlists.txt", "w")
+        for line in playlistFileContent:
+            if line != "\n":
+                newLine = line[0] + FILE_BREAK_CHAR + line[1][:-1] + "\n"
+                playlistFile.write(newLine)
+        
+        playlistFile.close()
+        
+        # completed removing a playlist
+        messagebox.showinfo(title = "success", message = "Successfully deleted playlist. ")
+
+# Manage playlists UI
+# Add and remove playlist functions
+def addPlaylistCommand():
+    # get name and link from entry objects
+    playlistName = newPlaylistNameEntry.get()
+    playlistLink = newPlaylistLinkEntry.get()
+    
+    # validate link
+    if "https://open.spotify.com/playlist/" in playlistLink:
+        # add playlist
+        addNewPlaylist(playlistName, playlistLink)
+    else:
+        messagebox.showerror(title = "Error", message = "Please enter a valid Spotify playlist link. ")
+
+def removePlaylistCommand():
+    # get name from entry objects
+    playlistName = removePlaylistNameEntry.get()
+
+    #make sure the playlist can be deleted
+    if playlistName in getPlaylistNames():
+        # confirm user wants to remove this playlist
+        confirmDelete = messagebox.askokcancel(title = "Are you sure?", message = "Are you sure you want to delete this playlist? \nThis action cannot be undone. ")
+        
+        # remove playlist
+        if confirmDelete:
+            removePlaylist(playlistName)
+    else:
+        errorMessage = "Cannot find playlist called " + playlistName
+        messagebox.showerror(title = "Error", message = errorMessage)
+
+# title UI and back button
 backToPlaylistSelectLabel = tkinter.Button(playlistManagementFrame, text = "Back", command = lambda: frameManager.setPage(playlistSelectFrame),font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
 backToPlaylistSelectLabel.place(relx = 0.05, rely = 0.05, anchor = tkinter.CENTER)
 
 playlistManagerLabel = tkinter.Label(playlistManagementFrame, text = "Manage Playlists", font = font.Font(size=25), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
 playlistManagerLabel.place(relx = .5, rely = .1, anchor = tkinter.CENTER)
 
+# adding playlist UI
 addPlaylistsLabel = tkinter.Label(playlistManagementFrame, text = "Add a new playlist", font = font.Font(size=20), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
 addPlaylistsLabel2 = tkinter.Label(playlistManagementFrame, text = "To add a new playlist, please enter the name of the playlist and the spotify link to the playlist:", font = font.Font(size=16), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
 newPlaylistNameLabel = tkinter.Label(playlistManagementFrame, text = "Playlist name: ", font = font.Font(size=14), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
 newPlaylistNameEntry = tkinter.Entry(playlistManagementFrame, justify = "center", font = font.Font(size = 12, weight = "normal"), width = 25, bg = PRESSED_TEXT_COLOUR, fg = "black")
 newPlaylistLinkLabel = tkinter.Label(playlistManagementFrame, text = "Playlist link: ", font = font.Font(size=14), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
 newPlaylistLinkEntry = tkinter.Entry(playlistManagementFrame, justify = "center", font = font.Font(size = 12, weight = "normal"), width = 25, bg = PRESSED_TEXT_COLOUR, fg = "black")
-addPlaylistButton = tkinter.Button(playlistManagementFrame, text = "Add Playlist", command = addPlaylist,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
+addPlaylistButton = tkinter.Button(playlistManagementFrame, text = "Add Playlist", command = addPlaylistCommand,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
 addPlaylistsLabel.place(relx = 0.5, rely = 0.2, anchor = tkinter.CENTER)
 addPlaylistsLabel2.place(relx = 0.5, rely = 0.27, anchor = tkinter.CENTER)
 newPlaylistNameLabel.place(relx = 0.35, rely = 0.33, anchor = tkinter.CENTER)
@@ -330,11 +425,12 @@ newPlaylistLinkLabel.place(relx = 0.65, rely = 0.33, anchor = tkinter.CENTER)
 newPlaylistLinkEntry.place(relx = 0.65, rely = 0.38, anchor = tkinter.CENTER, relheight = 0.045)
 addPlaylistButton.place(relx = 0.5, rely = 0.47, anchor = tkinter.CENTER)
 
+# removing playlist UI
 removePlaylistLabel = tkinter.Label(playlistManagementFrame, text = "Remove an existing playlist", font = font.Font(size=20), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
 removePlaylistLabel2 = tkinter.Label(playlistManagementFrame, text = "To remove an existing playlist, please enter the name of the playlist:", font = font.Font(size=16), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
 removePlaylistNameLabel = tkinter.Label(playlistManagementFrame, text = "Playlist name: ", font = font.Font(size=14), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
 removePlaylistNameEntry = tkinter.Entry(playlistManagementFrame, justify = "center", font = font.Font(size = 12, weight = "normal"), width = 25, bg = PRESSED_TEXT_COLOUR, fg = "black")
-removePlaylistButton = tkinter.Button(playlistManagementFrame, text = "Remove Playlist", command = removePlaylist,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
+removePlaylistButton = tkinter.Button(playlistManagementFrame, text = "Remove Playlist", command = removePlaylistCommand,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
 removePlaylistLabel.place(relx = 0.5, rely = 0.6, anchor = tkinter.CENTER)
 removePlaylistLabel2.place(relx = 0.5, rely = 0.67, anchor = tkinter.CENTER)
 removePlaylistNameLabel.place(relx = 0.5, rely = 0.73, anchor = tkinter.CENTER)
