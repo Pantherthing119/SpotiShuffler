@@ -285,26 +285,29 @@ frameManager = FrameManager(playlistSelectFrame)
 
 welcomeLabel = tkinter.Label(playlistSelectFrame, text = "Welcome to SpotiShuffler", font = font.Font(size=25), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
 selectionLabel = tkinter.Label(playlistSelectFrame, text = "Please select a playlist", font = font.Font(size=20), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
-welcomeLabel.place(relx = .5, rely = .2, anchor = tkinter.CENTER)
-selectionLabel.place(relx = .5, rely = .35, anchor = tkinter.CENTER)
+welcomeLabel.place(relx = .5, rely = .15, anchor = tkinter.CENTER)
+selectionLabel.place(relx = .5, rely = .3, anchor = tkinter.CENTER)
 
 options = getPlaylistNames()
 options.sort()
 
 dropdown = ttk.Combobox(playlistSelectFrame, values = options, state = "readonly", width = 32, font = font.Font(size=13), justify = "center", background = MAIN_BG_COLOUR, foreground = DROPDOWN_TEXT_COLOUR)
 dropdownSelectButton = tkinter.Button(playlistSelectFrame, text = "Add shuffled songs to queue", command = threadedAddToQueue,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
-dropdown.place(relx = .5, rely = .45, anchor = tkinter.CENTER)
-dropdownSelectButton.place(relx = .5, rely = .55, anchor = tkinter.CENTER)
+dropdown.place(relx = .5, rely = .4, anchor = tkinter.CENTER)
+dropdownSelectButton.place(relx = .5, rely = .5, anchor = tkinter.CENTER)
 
 playlistManagementButton = tkinter.Button(playlistSelectFrame, text = "Manage Playlists", command = lambda: frameManager.setPage(playlistManagementFrame),font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
-playlistManagementButton.place(relx = .5, rely = .7, anchor = tkinter.CENTER)
+playlistManagementButton.place(relx = .5, rely = .65, anchor = tkinter.CENTER)
 
 quitButton = tkinter.Button(playlistSelectFrame, text = "Quit", command = quit,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
-quitButton.place(relx = .5, rely = .85, anchor = tkinter.CENTER)
+quitButton.place(relx = .5, rely = .8, anchor = tkinter.CENTER)
 
 
 def addPlaylist():
     print("Add new playlist")
+
+def removePlaylist():
+    print("Remove existing playlist")
 
 backToPlaylistSelectLabel = tkinter.Button(playlistManagementFrame, text = "Back", command = lambda: frameManager.setPage(playlistSelectFrame),font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
 backToPlaylistSelectLabel.place(relx = 0.05, rely = 0.05, anchor = tkinter.CENTER)
@@ -327,6 +330,17 @@ newPlaylistLinkLabel.place(relx = 0.65, rely = 0.33, anchor = tkinter.CENTER)
 newPlaylistLinkEntry.place(relx = 0.65, rely = 0.38, anchor = tkinter.CENTER, relheight = 0.045)
 addPlaylistButton.place(relx = 0.5, rely = 0.47, anchor = tkinter.CENTER)
 
-frameManager.setPage(playlistManagementFrame)
+removePlaylistLabel = tkinter.Label(playlistManagementFrame, text = "Remove an existing playlist", font = font.Font(size=20), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
+removePlaylistLabel2 = tkinter.Label(playlistManagementFrame, text = "To remove an existing playlist, please enter the name of the playlist:", font = font.Font(size=16), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
+removePlaylistNameLabel = tkinter.Label(playlistManagementFrame, text = "Playlist name: ", font = font.Font(size=14), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
+removePlaylistNameEntry = tkinter.Entry(playlistManagementFrame, justify = "center", font = font.Font(size = 12, weight = "normal"), width = 25, bg = PRESSED_TEXT_COLOUR, fg = "black")
+removePlaylistButton = tkinter.Button(playlistManagementFrame, text = "Remove Playlist", command = removePlaylist,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
+removePlaylistLabel.place(relx = 0.5, rely = 0.6, anchor = tkinter.CENTER)
+removePlaylistLabel2.place(relx = 0.5, rely = 0.67, anchor = tkinter.CENTER)
+removePlaylistNameLabel.place(relx = 0.5, rely = 0.73, anchor = tkinter.CENTER)
+removePlaylistNameEntry.place(relx = 0.5, rely = 0.78, anchor = tkinter.CENTER, relheight = 0.045)
+removePlaylistButton.place(relx = 0.5, rely = 0.87, anchor = tkinter.CENTER)
+
+frameManager.setPage(playlistSelectFrame)
 
 window.mainloop()
