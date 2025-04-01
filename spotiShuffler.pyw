@@ -296,11 +296,36 @@ dropdownSelectButton = tkinter.Button(playlistSelectFrame, text = "Add shuffled 
 dropdown.place(relx = .5, rely = .45, anchor = tkinter.CENTER)
 dropdownSelectButton.place(relx = .5, rely = .55, anchor = tkinter.CENTER)
 
-playlistManagementButton = tkinter.Button(playlistSelectFrame, text = "Manage Playlists", command = frameManager.setPage(playlistManagementFrame),font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
+playlistManagementButton = tkinter.Button(playlistSelectFrame, text = "Manage Playlists", command = lambda: frameManager.setPage(playlistManagementFrame),font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
 playlistManagementButton.place(relx = .5, rely = .7, anchor = tkinter.CENTER)
 
 quitButton = tkinter.Button(playlistSelectFrame, text = "Quit", command = quit,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
 quitButton.place(relx = .5, rely = .85, anchor = tkinter.CENTER)
+
+
+def addPlaylist():
+    print("Add new playlist")
+
+backToPlaylistSelectLabel = tkinter.Button(playlistManagementFrame, text = "Back", command = lambda: frameManager.setPage(playlistSelectFrame),font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
+backToPlaylistSelectLabel.place(relx = 0.05, rely = 0.05, anchor = tkinter.CENTER)
+
+playlistManagerLabel = tkinter.Label(playlistManagementFrame, text = "Manage Playlists", font = font.Font(size=25), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
+playlistManagerLabel.place(relx = .5, rely = .1, anchor = tkinter.CENTER)
+
+addPlaylistsLabel = tkinter.Label(playlistManagementFrame, text = "Add a new playlist", font = font.Font(size=20), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
+addPlaylistsLabel2 = tkinter.Label(playlistManagementFrame, text = "To add a new playlist, please enter the name of the playlist and the spotify link to the playlist:", font = font.Font(size=16), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
+newPlaylistNameLabel = tkinter.Label(playlistManagementFrame, text = "Playlist name: ", font = font.Font(size=14), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
+newPlaylistNameEntry = tkinter.Entry(playlistManagementFrame, justify = "center", font = font.Font(size = 15, weight = "normal"), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
+newPlaylistLinkLabel = tkinter.Label(playlistManagementFrame, text = "Playlist link: ", font = font.Font(size=14), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
+newPlaylistLinkEntry = tkinter.Entry(playlistManagementFrame, justify = "center", font = font.Font(size = 15, weight = "normal"), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
+addPlaylistButton = tkinter.Button(playlistManagementFrame, text = "Add Playlist", command = addPlaylist,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
+addPlaylistsLabel.place(relx = 0.5, rely = 0.2, anchor = tkinter.CENTER)
+addPlaylistsLabel2.place(relx = 0.5, rely = 0.25, anchor = tkinter.CENTER)
+newPlaylistNameLabel.place(relx = 0.5, rely = 0.3, anchor = tkinter.CENTER)
+newPlaylistNameEntry.place(relx = 0.5, rely = 0.35, anchor = tkinter.CENTER)
+newPlaylistLinkLabel.place(relx = 0.5, rely = 0.4, anchor = tkinter.CENTER)
+newPlaylistLinkEntry.place(relx = 0.5, rely = 0.45, anchor = tkinter.CENTER)
+addPlaylistButton.place(relx = 0.5, rely = 0.55, anchor = tkinter.CENTER)
 
 frameManager.setPage(playlistSelectFrame)
 
