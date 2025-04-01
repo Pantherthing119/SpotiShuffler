@@ -93,9 +93,9 @@ def threadedAddToQueue():
     thread = threading.Thread(target=addToQueue) 
     thread.start()
 
-# code to get the value of the dropdown and use this to add 75 random songs from the selected playlist to the users queue
+# code to get the value of the playlistSelectDropdown and use this to add 75 random songs from the selected playlist to the users queue
 def addToQueue():
-    currentPlaylist = dropdown.get()
+    currentPlaylist = playlistSelectDropdown.get()
     if currentPlaylist == "":
         messagebox.showerror("Warning", "Please choose a playlist.")
     else:
@@ -183,7 +183,7 @@ def addToQueue():
             # if execution gets to here, playlist was not found. Return blank string instead. 
             return ""
 
-        currentPlaylistName = dropdown.get() # string for the name of the selected playlist
+        currentPlaylistName = playlistSelectDropdown.get() # string for the name of the selected playlist
         currentPlaylistURI = getURIFromName(currentPlaylistName)
         currentPlaylistLength = get_playlist_length(currentPlaylistURI)
 
@@ -310,13 +310,12 @@ selectionLabel = tkinter.Label(playlistSelectFrame, text = "Please select a play
 welcomeLabel.place(relx = .5, rely = .15, anchor = tkinter.CENTER)
 selectionLabel.place(relx = .5, rely = .3, anchor = tkinter.CENTER)
 
-options = getPlaylistNames()
-options = sortStrList(options)
+options = sortStrList(getPlaylistNames())
 
-global dropdown
-dropdown = ttk.Combobox(playlistSelectFrame, values = options, state = "readonly", width = 32, font = font.Font(size=13), justify = "center", background = MAIN_BG_COLOUR, foreground = DROPDOWN_TEXT_COLOUR)
+global playlistSelectDropdown
+playlistSelectDropdown = ttk.Combobox(playlistSelectFrame, values = options, state = "readonly", width = 32, font = font.Font(size=13), justify = "center", background = MAIN_BG_COLOUR, foreground = DROPDOWN_TEXT_COLOUR)
 dropdownSelectButton = tkinter.Button(playlistSelectFrame, text = "Add shuffled songs to queue", command = threadedAddToQueue,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
-dropdown.place(relx = .5, rely = .4, anchor = tkinter.CENTER)
+playlistSelectDropdown.place(relx = .5, rely = .4, anchor = tkinter.CENTER, relheight = 0.045)
 dropdownSelectButton.place(relx = .5, rely = .5, anchor = tkinter.CENTER)
 
 playlistManagementButton = tkinter.Button(playlistSelectFrame, text = "Manage Playlists", command = lambda: frameManager.setPage(playlistManagementFrame),font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
@@ -327,14 +326,16 @@ quitButton.place(relx = .5, rely = .8, anchor = tkinter.CENTER)
 
 
 def updateDropdown():
-    global dropdown
-    dropdown.place_forget()
+    global playlistSelectDropdown, playlistRemoveDropdown
+    playlistSelectDropdown.place_forget()
+    playlistRemoveDropdown.place_forget()
     
-    options = getPlaylistNames()
-    options = sortStrList(options)
+    options = sortStrList(getPlaylistNames())
     
-    dropdown = ttk.Combobox(playlistSelectFrame, values = options, state = "readonly", width = 32, font = font.Font(size=13), justify = "center", background = MAIN_BG_COLOUR, foreground = DROPDOWN_TEXT_COLOUR)
-    dropdown.place(relx = .5, rely = .4, anchor = tkinter.CENTER)
+    playlistSelectDropdown = ttk.Combobox(playlistSelectFrame, values = options, state = "readonly", width = 32, font = font.Font(size=13), justify = "center", background = MAIN_BG_COLOUR, foreground = DROPDOWN_TEXT_COLOUR)
+    playlistRemoveDropdown = ttk.Combobox(playlistManagementFrame, values = options, state = "readonly", width = 32, font = font.Font(size=13), justify = "center", background = MAIN_BG_COLOUR, foreground = DROPDOWN_TEXT_COLOUR)
+    playlistSelectDropdown.place(relx = .5, rely = .4, anchor = tkinter.CENTER, relheight = 0.045)
+    playlistRemoveDropdown.place(relx = 0.5, rely = 0.78, anchor = tkinter.CENTER, relheight = 0.045)
 
 def addNewPlaylist(name, link):
     '''
@@ -422,7 +423,7 @@ def addPlaylistCommand():
 
 def removePlaylistCommand():
     # get name from entry objects
-    playlistName = removePlaylistNameEntry.get()
+    playlistName = playlistRemoveDropdown.get()
 
     #make sure the playlist can be deleted
     if playlistName in getPlaylistNames():
@@ -463,12 +464,15 @@ addPlaylistButton.place(relx = 0.5, rely = 0.47, anchor = tkinter.CENTER)
 removePlaylistLabel = tkinter.Label(playlistManagementFrame, text = "Remove an existing playlist", font = font.Font(size=20), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
 removePlaylistLabel2 = tkinter.Label(playlistManagementFrame, text = "To remove an existing playlist, please enter the name of the playlist:", font = font.Font(size=16), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
 removePlaylistNameLabel = tkinter.Label(playlistManagementFrame, text = "Playlist name: ", font = font.Font(size=14), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR)
-removePlaylistNameEntry = tkinter.Entry(playlistManagementFrame, justify = "center", font = font.Font(size = 12, weight = "normal"), width = 25, bg = PRESSED_TEXT_COLOUR, fg = "black")
+#removePlaylistNameEntry = tkinter.Entry(playlistManagementFrame, justify = "center", font = font.Font(size = 12, weight = "normal"), width = 25, bg = PRESSED_TEXT_COLOUR, fg = "black")
+options = sortStrList(getPlaylistNames())
+global playlistRemoveDropdown
+playlistRemoveDropdown = ttk.Combobox(playlistManagementFrame, values = options, state = "readonly", width = 32, font = font.Font(size=13), justify = "center", background = MAIN_BG_COLOUR, foreground = DROPDOWN_TEXT_COLOUR)
 removePlaylistButton = tkinter.Button(playlistManagementFrame, text = "Remove Playlist", command = removePlaylistCommand,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
 removePlaylistLabel.place(relx = 0.5, rely = 0.6, anchor = tkinter.CENTER)
 removePlaylistLabel2.place(relx = 0.5, rely = 0.67, anchor = tkinter.CENTER)
 removePlaylistNameLabel.place(relx = 0.5, rely = 0.73, anchor = tkinter.CENTER)
-removePlaylistNameEntry.place(relx = 0.5, rely = 0.78, anchor = tkinter.CENTER, relheight = 0.045)
+playlistRemoveDropdown.place(relx = 0.5, rely = 0.78, anchor = tkinter.CENTER, relheight = 0.045)
 removePlaylistButton.place(relx = 0.5, rely = 0.87, anchor = tkinter.CENTER)
 
 frameManager.setPage(playlistSelectFrame)
