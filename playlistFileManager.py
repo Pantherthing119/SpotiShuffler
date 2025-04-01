@@ -4,7 +4,7 @@ Will be deleted once file handling is full implemented.
 '''
 
 global fileBreakChar
-fileBreakChar = "`/¬|"
+fileBreakChar = "`|?@"
 
 def addNewPlaylist(name, link):
     '''
@@ -117,7 +117,7 @@ def getURIFromName(playlistName):
 
     for line in playlistFile:
         if line != "\n":
-            if line == playlistName:
+            if line.split(fileBreakChar)[0] == playlistName:
                 return line.split(fileBreakChar)[1][:-1]
 
     playlistFile.close()

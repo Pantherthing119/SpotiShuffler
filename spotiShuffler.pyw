@@ -25,7 +25,7 @@ window.iconbitmap(r"SpotiShuffler_Icon.ico")
 window.iconphoto(True, ImageTk.PhotoImage(icon))
 
 global FILE_BREAK_CHAR
-FILE_BREAK_CHAR = "`/¬|"
+FILE_BREAK_CHAR = "`|?@"
 #use `/¬| as a sequence of charcters to break up the playlist name and the playlist URI in the playlists.txt file. Cannot use standard comma as a seperator as playlists may contain commas in their names. Instead, I have used a random sequence of characters instead as it is very unlikely that this sequence will appear in a playlist name. 
 
 class StatusWindowManager():
@@ -36,7 +36,7 @@ class StatusWindowManager():
         self.setGeoInfo = "400x300" + "+" + str(int(window.winfo_screenwidth()/2) - 200) + "+" + str(int(window.winfo_screenheight()/2) - 150)
         self.statusWindow.geometry(self.setGeoInfo)
         self.statusWindow.resizable(False, False)
-                
+        
         #define frames
         self.gettingLengthsFrame = tkinter.Frame(self.statusWindow, background = MAIN_BG_COLOUR)
         self.fetchingSongsFrame = tkinter.Frame(self.statusWindow, background = MAIN_BG_COLOUR)
@@ -79,7 +79,6 @@ class FrameManager():
     def __init__(self, startFrame):
         self.currentFrame = startFrame
         self.currentFrame.pack(expand = True, fill = "both")
-        self.pageTrack = ""
 
     def setPage(self, newFrame):
         self.currentFrame.pack_forget()
@@ -175,7 +174,7 @@ def addToQueue():
 
             for line in playlistFile:
                 if line != "\n":
-                    if line == playlistName:
+                    if line.split(FILE_BREAK_CHAR)[0] == playlistName:
                         return line.split(FILE_BREAK_CHAR)[1][:-1]
 
             playlistFile.close()
@@ -302,5 +301,7 @@ playlistManagementButton.place(relx = .5, rely = .7, anchor = tkinter.CENTER)
 
 quitButton = tkinter.Button(playlistSelectFrame, text = "Quit", command = quit,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
 quitButton.place(relx = .5, rely = .85, anchor = tkinter.CENTER)
+
+frameManager.setPage(playlistSelectFrame)
 
 window.mainloop()
