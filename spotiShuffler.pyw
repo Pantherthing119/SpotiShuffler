@@ -243,6 +243,26 @@ def addToQueue():
         statusWindowManager.killStatusWindow()
         messagebox.showinfo("Success", "Successfully added shuffled songs from " + currentPlaylist + " to queue")
 
+def sortStrList(strList):
+    mappingDict = {}
+    for item in strList:
+        mappingDict.update({item : item.lower()})
+    
+    lowerCaseList = []
+    for key in mappingDict:
+        lowerCaseList.append(mappingDict.get(key))
+
+    lowerCaseList.sort()
+    
+    sortedList = []
+    for item in lowerCaseList:
+        for key in mappingDict:
+            if item == mappingDict.get(key).lower():
+                sortedList.append(key)
+                break
+    
+    return sortedList
+
 def getPlaylistNames():
     '''
     returns an array of strings containing the name of each playlist in the file. 
@@ -291,7 +311,7 @@ welcomeLabel.place(relx = .5, rely = .15, anchor = tkinter.CENTER)
 selectionLabel.place(relx = .5, rely = .3, anchor = tkinter.CENTER)
 
 options = getPlaylistNames()
-options.sort()
+options = sortStrList(options)
 
 global dropdown
 dropdown = ttk.Combobox(playlistSelectFrame, values = options, state = "readonly", width = 32, font = font.Font(size=13), justify = "center", background = MAIN_BG_COLOUR, foreground = DROPDOWN_TEXT_COLOUR)
@@ -311,7 +331,7 @@ def updateDropdown():
     dropdown.place_forget()
     
     options = getPlaylistNames()
-    options.sort()
+    options = sortStrList(options)
     
     dropdown = ttk.Combobox(playlistSelectFrame, values = options, state = "readonly", width = 32, font = font.Font(size=13), justify = "center", background = MAIN_BG_COLOUR, foreground = DROPDOWN_TEXT_COLOUR)
     dropdown.place(relx = .5, rely = .4, anchor = tkinter.CENTER)
