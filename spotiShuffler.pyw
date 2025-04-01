@@ -293,6 +293,7 @@ selectionLabel.place(relx = .5, rely = .3, anchor = tkinter.CENTER)
 options = getPlaylistNames()
 options.sort()
 
+global dropdown
 dropdown = ttk.Combobox(playlistSelectFrame, values = options, state = "readonly", width = 32, font = font.Font(size=13), justify = "center", background = MAIN_BG_COLOUR, foreground = DROPDOWN_TEXT_COLOUR)
 dropdownSelectButton = tkinter.Button(playlistSelectFrame, text = "Add shuffled songs to queue", command = threadedAddToQueue,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
 dropdown.place(relx = .5, rely = .4, anchor = tkinter.CENTER)
@@ -303,6 +304,17 @@ playlistManagementButton.place(relx = .5, rely = .65, anchor = tkinter.CENTER)
 
 quitButton = tkinter.Button(playlistSelectFrame, text = "Quit", command = quit,font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
 quitButton.place(relx = .5, rely = .8, anchor = tkinter.CENTER)
+
+
+def updateDropdown():
+    global dropdown
+    dropdown.place_forget()
+    
+    options = getPlaylistNames()
+    options.sort()
+    
+    dropdown = ttk.Combobox(playlistSelectFrame, values = options, state = "readonly", width = 32, font = font.Font(size=13), justify = "center", background = MAIN_BG_COLOUR, foreground = DROPDOWN_TEXT_COLOUR)
+    dropdown.place(relx = .5, rely = .4, anchor = tkinter.CENTER)
 
 def addNewPlaylist(name, link):
     '''
@@ -338,6 +350,7 @@ def addNewPlaylist(name, link):
         playlistFile.close()
 
         messagebox.showinfo(title = "Success", message = "Successfully added playlist. ")
+        updateDropdown()
 
 
 def removePlaylist(name):
@@ -371,6 +384,7 @@ def removePlaylist(name):
         
         # completed removing a playlist
         messagebox.showinfo(title = "success", message = "Successfully deleted playlist. ")
+        updateDropdown()
 
 # Manage playlists UI
 # Add and remove playlist functions
