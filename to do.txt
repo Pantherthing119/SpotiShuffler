@@ -7,6 +7,10 @@ Could implement this so user only needs to enter a link to a song to add it to p
 Can also change code so it does not need to rely on playlists.txt to provide the name and fetch it from the URI instead. 
 
 
+----- IMPROVE COPY COMMAND -----
+Swap to using robocopy instead of COPY then I can include flags to not copy if the file already exists. 
+Ask Dad about the right flags as he has done it for the unity backups batch file. 
+
 ------ INSTALL PACKAGES ------
 Need to write pip install commands for relevant modules
 spotipy, pillow etc.
