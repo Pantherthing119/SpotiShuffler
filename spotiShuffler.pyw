@@ -100,10 +100,11 @@ def addToQueue():
         messagebox.showerror("Warning", "Please choose a playlist.")
     else:
         # spotipy app data
-        # username = "ddm9kv6312dcqxu9ijwke2x3j"
+        authFile = open("spotipyAuthInfo.txt", "r")
         clientID = "42ef47bdf0d342cca3fa7773040df34a"
-        clientSecret = "c62e82d279064fab82ab819e8426392c"
+        clientSecret = authFile.readline()
         redirect_uri = "https://localhost:8888/callback"
+        authFile.close()
 
         # initialise spotipy
         sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=clientID, client_secret=clientSecret, redirect_uri=redirect_uri, scope="user-library-read user-read-playback-state user-modify-playback-state"))
