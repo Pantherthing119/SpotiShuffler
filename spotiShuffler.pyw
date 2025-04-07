@@ -401,7 +401,7 @@ def removePlaylist(name):
         playlistFile.close()
         
         # completed removing a playlist
-        messagebox.showinfo(title = "success", message = "Successfully deleted playlist. ")
+        messagebox.showinfo(title = "Success", message = "Successfully deleted playlist. ")
         updateDropdown()
 
 # Manage playlists UI
@@ -412,9 +412,11 @@ def addPlaylistCommand():
     playlistLink = newPlaylistLinkEntry.get()
     
     # validate link
-    if "https://open.spotify.com/playlist/" in playlistLink:
+    if "https://open.spotify.com/playlist/" in playlistLink and playlistName != "" and playlistLink != "":
         # add playlist
         addNewPlaylist(playlistName, playlistLink)
+    elif playlistName == "" or playlistLink == "":
+        messagebox.showerror(title = "Error", message = "Please enter a name and link. ")
     else:
         messagebox.showerror(title = "Error", message = "Please enter a valid Spotify playlist link. ")
 
@@ -423,7 +425,7 @@ def removePlaylistCommand():
     playlistName = playlistRemoveDropdown.get()
 
     #make sure the playlist can be deleted
-    if playlistName in getPlaylistNames():
+    if playlistName != "":
         # confirm user wants to remove this playlist
         confirmDelete = messagebox.askokcancel(title = "Are you sure?", message = "Are you sure you want to delete this playlist? \nThis action cannot be undone. ")
         
@@ -431,8 +433,7 @@ def removePlaylistCommand():
         if confirmDelete:
             removePlaylist(playlistName)
     else:
-        errorMessage = "Cannot find playlist called " + playlistName
-        messagebox.showerror(title = "Error", message = errorMessage)
+        messagebox.showerror(title = "Warning", message = "Please choose a playlist. ")
 
 # title UI and back button
 backToPlaylistSelectLabel = tkinter.Button(playlistManagementFrame, text = "Back", command = lambda: frameManager.setPage(playlistSelectFrame),font = font.Font(size=15), bg = MAIN_BG_COLOUR, fg = MAIN_TEXT_COLOUR, activebackground = PRESSED_TEXT_COLOUR)
