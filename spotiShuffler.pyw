@@ -16,18 +16,14 @@ setGeoInfo = "1000x600" + "+" + str(int(window.winfo_screenwidth()/2) - 500) + "
 window.geometry(setGeoInfo)
 window.resizable(False, False)
 window.configure(background = MAIN_BG_COLOUR)
-icon = Image.open(r"spotify.png")
-icon.thumbnail([sys.maxsize, 60], Image.Resampling.LANCZOS)
 
 myappid = 'tkinter.python.test'
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-window.iconbitmap(r"SpotiShuffler_Icon.ico")
-
-window.iconphoto(True, ImageTk.PhotoImage(icon))
+window.iconbitmap(default = r"SpotiShuffler_Icon.ico")
 
 global FILE_BREAK_CHAR
 FILE_BREAK_CHAR = "`|?@"
-# use `/¬| as a sequence of charcters to break up the playlist name and the playlist URI in the playlists.txt file. Cannot use standard comma as a seperator as playlists may contain commas in their names. Instead, I have used a random sequence of characters instead as it is very unlikely that this sequence will appear in a playlist name. 
+# use `|?@ as a sequence of charcters to break up the playlist name and the playlist URI in the playlists.txt file. Cannot use standard comma as a seperator as playlists may contain commas in their names. Instead, I have used a random sequence of characters instead as it is very unlikely that this sequence will appear in a playlist name. 
 
 class StatusWindowManager():
     def __init__(self):
