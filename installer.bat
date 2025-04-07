@@ -8,5 +8,5 @@ echo.
 echo Installation complete
 echo.
 set /P askLaunch=Do you want to launch SpotiShuffler [Y/N]?
-if %askLaunch% == Y pyw ".\spotiShuffler.pyw"
+if %askLaunch% == Y start SpotiShuffler.lnk
 exit
