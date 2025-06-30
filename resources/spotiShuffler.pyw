@@ -43,6 +43,7 @@ class StatusWindowManager():
         self.setGeoInfo = "400x300" + "+" + str(int(window.winfo_screenwidth()/2) - 200) + "+" + str(int(window.winfo_screenheight()/2) - 150)
         self.statusWindow.geometry(self.setGeoInfo)
         self.statusWindow.resizable(False, False)
+        self.statusWindow.protocol("WM_DELETE_WINDOW", self.ingnoreWindowClose)
         
         # define frames
         self.gettingLengthsFrame = tkinter.Frame(self.statusWindow, background = MAIN_BG_COLOUR)
@@ -81,6 +82,9 @@ class StatusWindowManager():
         
     def killStatusWindow(self):
         self.statusWindow.destroy()
+
+    def ingnoreWindowClose(self):
+        pass
 
 class FrameManager():
     def __init__(self, startFrame):
